@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello-server
+    service: hello-server
+  name: hello-server
+  namespace: dev2
+spec:
+  ports:
+    - name: tcp-8071-8071-hello-server
+      protocol: TCP
+      port: 8071
+      targetPort: 8071
+  selector:
+    app: hello-server
+  type: ClusterIP
+  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-server
+spec:
+  selector:
+    matchLabels:
+      app: hello-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hello-server
+    spec:
+      containers:
+        - name: hello-server
+          image: gcr.io/t-operative-348503/hello-server:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8071
+          env:
+           - name: SPRING_PROFILES_ACTIVE
+             value: "dev2"
